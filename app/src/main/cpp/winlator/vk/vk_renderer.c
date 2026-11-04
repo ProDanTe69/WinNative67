@@ -1336,8 +1336,15 @@ static bool create_swapchain(VkRenderer* r, uint32_t fallback_width, uint32_t fa
     VkSwapchainKHR old_sc = r->swapchain;
     sci.oldSwapchain = old_sc;
     VkSwapchainKHR new_sc = VK_NULL_HANDLE;
-    if (vkCreateSwapchainKHR(r->device, &sci, NULL, &new_sc) != VK_SUCCESS) {
-        VK_LOGE("vkCreateSwapchainKHR failed");
+    VkResult sc_res = vkCreateSwapchainKHR(r->device, &sci, NULL, &new_sc);
+    if (sc_res != VK_SUCCESS && r->swapchain_storage) {
+        VK_LOGW("vkCreateSwapchainKHR with STORAGE_BIT failed (%d), retrying composite path", (int)sc_res);
+        r->swapchain_storage = false;
+        sci.imageUsage &= ~VK_IMAGE_USAGE_STORAGE_BIT;
+        sc_res = vkCreateSwapchainKHR(r->device, &sci, NULL, &new_sc);
+    }
+    if (sc_res != VK_SUCCESS) {
+        VK_LOGE("vkCreateSwapchainKHR failed (%d)", (int)sc_res);
         if (old_sc) { vkDestroySwapchainKHR(r->device, old_sc, NULL); r->swapchain = VK_NULL_HANDLE; }
         return false;
     }
