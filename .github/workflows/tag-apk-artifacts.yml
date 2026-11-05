@@ -135,6 +135,6 @@ jobs:
         with:
           name: ${{ steps.package.outputs.artifact_name }}
           path: artifacts/apk/*.apk
-          retention-days: 30
+          retention-days: 1
           if-no-files-found: error
           compression-level: 0
