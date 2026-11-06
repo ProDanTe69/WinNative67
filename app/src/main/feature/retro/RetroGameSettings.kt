@@ -1438,7 +1438,7 @@ private fun RetroFrameGenerationGroup(state: RetroSettingsState) {
                 else -> stringResource(R.string.settings_frame_generation_not_found)
             },
         )
-        if (gpuSupported && shaderState != FRAMEGEN_SHADERS_NOT_OWNED) {
+        if (gpuSupported) {
             RetroFrameGenLocateButton(context) { result, name ->
                 sourceName = name
                 shaderState = retroFrameGenStateFor(result)
